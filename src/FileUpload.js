@@ -1,7 +1,7 @@
 import React from 'react'
 import Papa from 'papaparse';
 
-export default function FileUpload() {
+export default function FileUpload({setData}) {
 
     const handleFileUpload = (e, isInfoFile) => {
         const file = e.target.files[0];
@@ -11,9 +11,9 @@ export default function FileUpload() {
                 skipEmptyLines: true,
                 complete: (result) => {
                     if (isInfoFile) {
-                        // processEmployeeInfo(result.data);
+                        setData(result.data);
                     } else {
-                        // processEmployeePerformance(result.data);
+                        setData(result.data);
                     }
                 }
             });
