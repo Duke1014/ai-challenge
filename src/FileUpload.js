@@ -12,8 +12,10 @@ export default function FileUpload({setData}) {
                 complete: (result) => {
                     if (isInfoFile) {
                         setData(result.data);
+                        console.log(result.data)
                     } else {
                         setData(result.data);
+                        console.log(result.data)
                     }
                 }
             });

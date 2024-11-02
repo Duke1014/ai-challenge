@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import axios from 'axios';
+import { Line, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import Papa from 'papaparse';
 import FileUpload from './FileUpload';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 function Home() {
   const [dataOne, setDataOne] = useState(null);
@@ -12,7 +12,6 @@ function Home() {
   const [selectedColumnsOne, setSelectedColumnsOne] = useState([]);
   const [selectedColumnsTwo, setSelectedColumnsTwo] = useState([]);
   const [chartData, setChartData] = useState(null);
-  const [synopsis, setSynopsis] = useState(null);
 
   const handleColumnSelection = (column, fileIndex, isSelected) => {
     const setSelectedColumns = fileIndex === 1 ? setSelectedColumnsOne : setSelectedColumnsTwo;
@@ -25,85 +24,44 @@ function Home() {
     }
   };
 
-  const mergeAndGenerateChartData = () => {
-    if (!dataOne || !dataTwo) return;
+  const generateChartData = () => {
+    if (!selectedColumnsOne.length || !selectedColumnsTwo.length || !dataOne || !dataTwo) return;
 
-    // Merging logic
-    const mergedData = dataOne.map(row1 => {
-      const matchingRow = dataTwo.find(row2 => row2[dataOne[0].ID] === row1[dataOne[0].ID]); // Replace 'ID' with the key for matching
-      if (matchingRow) {
-        return { ...row1, ...matchingRow };
-      }
-      return row1; // Keep row1 if no match found
-    });
+    const commonColumn = selectedColumnsOne.find(col => selectedColumnsTwo.includes(col));
+    if (!commonColumn) {
+      alert("No common column selected between the two files to correlate data.");
+      return;
+    }
 
-    // Prune the merged data based on selected columns
-    const prunedData = mergedData.map(row => {
-      const newRow = {};
-      selectedColumnsOne.forEach(col => { if (row[col]) newRow[col] = row[col]; });
-      selectedColumnsTwo.forEach(col => { if (row[col]) newRow[col] = row[col]; });
-      return newRow;
-    });
+    const combinedData = dataOne
+      .filter(row1 => dataTwo.some(row2 => row2[commonColumn] === row1[commonColumn]))
+      .map(row1 => ({
+        ...row1,
+        ...dataTwo.find(row2 => row2[commonColumn] === row1[commonColumn]),
+      }));
 
-    // Generate chart data
-    const chartData = generateLineChartData(prunedData);
-    setChartData(chartData);
-
-    // Call LLM API for synopsis
-    generateSynopsis(chartData);
+    setChartData(generateLineChartData(combinedData, selectedColumnsOne, selectedColumnsTwo, commonColumn));
   };
 
-  const generateLineChartData = (prunedData) => {
-    const labels = prunedData.map(item => item[dataOne[0].ID]); // Replace 'ID' with the key for the x-axis label
+  const generateLineChartData = (combinedData, colsOne, colsTwo, commonColumn) => {
+    const labels = combinedData.map(item => item[commonColumn]);
 
     const datasets = [
-      ...selectedColumnsOne.map(col => ({
+      ...colsOne.map(col => ({
         label: `File 1 - ${col}`,
-        data: prunedData.map(item => parseFloat(item[col]) || 0),
+        data: combinedData.map(item => parseFloat(item[col]) || 0),
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
       })),
-      ...selectedColumnsTwo.map(col => ({
+      ...colsTwo.map(col => ({
         label: `File 2 - ${col}`,
-        data: prunedData.map(item => parseFloat(item[col]) || 0),
+        data: combinedData.map(item => parseFloat(item[col]) || 0),
         backgroundColor: 'rgba(153, 102, 255, 0.2)',
         borderColor: 'rgba(153, 102, 255, 1)',
       })),
     ];
 
     return { labels, datasets };
-  };
-
-  const generateSynopsis = async (chartData) => {
-    try {
-      const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          model: 'gpt-3.5-turbo',  // Or 'gpt-4' if available in your API plan
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a helpful assistant for generating summaries of chart data.',
-            },
-            {
-              role: 'user',
-              content: `Provide a brief summary of the following data:\n${JSON.stringify(chartData)}`,
-            },
-          ],
-        },
-        {
-          headers: {
-            Authorization: `Bearer YOUR_OPENAI_API_KEY`,  // Replace with your actual API key
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      setSynopsis(response.data.choices[0].message.content);
-    } catch (error) {
-      console.error("Error generating synopsis:", error);
-      setSynopsis("Error generating synopsis.");
-    }
   };
 
   return (
@@ -144,18 +102,11 @@ function Home() {
         </div>
       )}
 
-      <button onClick={mergeAndGenerateChartData} style={{ marginTop: '20px' }}>Generate Chart and Synopsis</button>
+      <button onClick={generateChartData} style={{ marginTop: '20px' }}>Generate Chart</button>
 
       {chartData && (
         <div style={{ width: '600px', marginTop: '30px' }}>
           <Line data={chartData} options={{ responsive: true }} />
-        </div>
-      )}
-
-      {synopsis && (
-        <div style={{ marginTop: '20px' }}>
-          <h2>Chart Synopsis</h2>
-          <p>{synopsis}</p>
         </div>
       )}
     </div>
