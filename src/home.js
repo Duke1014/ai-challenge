@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import Papa from 'papaparse';
+// import Papa from 'papaparse';
 import FileUpload from './FileUpload';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
@@ -76,12 +76,13 @@ function Home() {
         <div>
           <h2>Select Columns from File 1</h2>
           {Object.keys(dataOne[0]).map((col, index) => (
-            <label key={index}>
+            <label key={index} className='column-select'>
               <input
                 type="checkbox"
                 onChange={(e) => handleColumnSelection(col, 1, e.target.checked)}
               />
               {col}
+              <br />
             </label>
           ))}
         </div>
@@ -97,6 +98,7 @@ function Home() {
                 onChange={(e) => handleColumnSelection(col, 2, e.target.checked)}
               />
               {col}
+              <br />
             </label>
           ))}
         </div>
@@ -105,7 +107,7 @@ function Home() {
       <button onClick={generateChartData} style={{ marginTop: '20px' }}>Generate Chart</button>
 
       {chartData && (
-        <div style={{ width: '600px', marginTop: '30px' }}>
+        <div style={{ width: '800px', marginTop: '30px' }}>
           <Line data={chartData} options={{ responsive: true }} />
         </div>
       )}
