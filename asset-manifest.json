@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ai-challenge/static/css/main.14957386.css",
+    "main.js": "/ai-challenge/static/js/main.11dad07d.js",
+    "static/js/453.567d3e13.chunk.js": "/ai-challenge/static/js/453.567d3e13.chunk.js",
+    "index.html": "/ai-challenge/index.html",
+    "main.14957386.css.map": "/ai-challenge/static/css/main.14957386.css.map",
+    "main.11dad07d.js.map": "/ai-challenge/static/js/main.11dad07d.js.map",
+    "453.567d3e13.chunk.js.map": "/ai-challenge/static/js/453.567d3e13.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.14957386.css",
+    "static/js/main.11dad07d.js"
+  ]
+}
