@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { Line, Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 // import Papa from 'papaparse';
 import FileUpload from './FileUpload';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
+import DataChart from './DataChart';
 
 export default function Home() {
+  
   const [dataOne, setDataOne] = useState(null);
   const [dataTwo, setDataTwo] = useState(null);
   const [selectedColumnsOne, setSelectedColumnsOne] = useState([]);
@@ -108,9 +106,7 @@ export default function Home() {
       {dataOne ? (dataTwo ? <><button onClick={generateChartData} style={{ marginTop: '20px' }}>Generate Chart</button></> : <></>) : <></>}
 
       {chartData && (
-        <div style={{ width: '800px', marginTop: '30px' }}>
-          <Line data={chartData} options={{ responsive: true }} />
-        </div>
+        <DataChart chartData={chartData} />
       )}
     </div>
   );
