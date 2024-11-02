@@ -3,10 +3,11 @@ import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 // import Papa from 'papaparse';
 import FileUpload from './FileUpload';
+import Navbar from './Navbar';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
-function Home() {
+export default function Home() {
   const [dataOne, setDataOne] = useState(null);
   const [dataTwo, setDataTwo] = useState(null);
   const [selectedColumnsOne, setSelectedColumnsOne] = useState([]);
@@ -66,12 +67,13 @@ function Home() {
 
   return (
     <div>
-      <h1>Upload Two CSV Files to Generate a Correlated Graph</h1>
-      <div>
-        <FileUpload key={1} setData={setDataOne} />
-        <FileUpload key={2} setData={setDataTwo} />
+      <Navbar />
+      <div className='file-upload'>
+        <FileUpload key={1} id={1} setData={setDataOne} />
+        <FileUpload key={2} id={2} setData={setDataTwo} />
       </div>
 
+      <div className='data-columns'>
       {dataOne && (
         <div>
           <h2>Select Columns from File 1</h2>
@@ -103,8 +105,9 @@ function Home() {
           ))}
         </div>
       )}
-
-      <button onClick={generateChartData} style={{ marginTop: '20px' }}>Generate Chart</button>
+      </div>
+ 
+      {dataOne ? (dataTwo ? <><button onClick={generateChartData} style={{ marginTop: '20px' }}>Generate Chart</button></> : <></>) : <></>}
 
       {chartData && (
         <div style={{ width: '800px', marginTop: '30px' }}>
@@ -114,5 +117,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;

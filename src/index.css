@@ -5,6 +5,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  justify-content: center;
+  /* align-content: center; */
+  display: flex;
+  padding: 0 15% 0 15%;
 }
 
 code {
@@ -12,6 +16,18 @@ code {
     monospace;
 }
 
-/* .column-select {
-  list-style: armenian;
-} */
+.file-upload {
+  justify-content: center;
+  align-content: center;
+  display: flex;
+}
+
+.data-columns {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar {
+  justify-content: center;
+  display: flex;
+}
