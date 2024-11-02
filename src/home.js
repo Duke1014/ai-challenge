@@ -3,7 +3,6 @@ import { Line, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 // import Papa from 'papaparse';
 import FileUpload from './FileUpload';
-import Navbar from './Navbar';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -67,7 +66,6 @@ export default function Home() {
 
   return (
     <div>
-      <Navbar />
       <div className='file-upload'>
         <FileUpload key={1} id={1} setData={setDataOne} />
         <FileUpload key={2} id={2} setData={setDataTwo} />
